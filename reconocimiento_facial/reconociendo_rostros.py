@@ -1,19 +1,39 @@
 import cv2
 import os
 import imutils
-faceClassif = cv2.CascadeClassifier("haarcascade_frontalface_default.xml")
-image = cv2.imread("gente.jpg")
-gray = cv2.cvtColor(image, cv2.COLOR_RGB2GRAY)
+import copy
 
-faceClassif =cv2.CascadeClassifier(".//data//haarcascade//haarcascade_frontalface_default.xml")
+personName = "Brian"
+dataPath = "/Users/brianqp/PycharmProjects/proyecto_ia/reconocimiento_facial/data"
+personPath = dataPath + "/" + personName
 
-faces = faceClassif.detectMultiScale(gray, scaleFactor=1.1, # Variable que afecta que tanto se reducira la imagen
-                                     minNeighbors=5,    # Minima cantidad de vecinos que son la misma persona
-                                     minSize=(50,50),   # Tamano minimo de los rostros
-                                     maxSize=(200,200)) # Tamano maximo de los rostros
+if not os.path.exists(personPath):
+    print("Carpeta creada ", personPath)
+    os.makedirs(personName)
 
-for (x,y,w,h) in faces:
-    cv2.rectangle(image, (x,y), (x+w,y+h), (0,255,0))
-cv2.imshow("image", image)
-cv2.waitKey()
-cv2.destroyWindow()
+cap = cv2.VideoCapture(0)
+faceClassif = cv2.CascadeClassifier(".//data//haarcascade//haarcascade_frontalface_default.xml")
+count = 0
+
+while True:
+    ret, frame = cap.read()
+    if ret == False: break
+    frame = imutils.resize(frame, width=640)
+    gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+    auxFrame = frame.copy()
+
+    faces = faceClassif.detectMultiScale(gray,1.3,5)
+    for (x,y,w,h) in faces:
+        cv2.rectangle(faces, (x,y),(x+w,y+h),color="green", 2)
+        rostro = auxFrame[y:y+h, x:x+w]
+        rostro = cv2.resize(rostro, (150,150), interpolation=cv2.INTER_CUBIC)
+        cv2.imwrite(personPath + '/rostro_{}.jpg'.format(count), rostro)
+        count += 1
+
+    cv2.imshow('frame', frame)
+    k = cv2.waitKey(1)
+    if k == 27 or count >= 300:
+        break
+
+    cap.release()
+    cv2.destroyWindow()
