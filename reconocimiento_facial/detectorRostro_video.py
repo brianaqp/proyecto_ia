@@ -3,7 +3,7 @@ import numpy as np
 
 cap = cv2.VideoCapture(0)
 
-faceClassif =cv2.CascadeClassifier(".//data//haarcascade//haarcascade_frontalface_default.xml")
+faceClassif =cv2.CascadeClassifier(".//haarcascade//haarcascade_frontalface_default.xml")
 
 while True:
     ret, frame = cap.read()

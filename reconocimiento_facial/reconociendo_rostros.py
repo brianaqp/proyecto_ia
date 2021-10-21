@@ -12,7 +12,7 @@ if not os.path.exists(personPath):
     os.makedirs(personName)
 
 cap = cv2.VideoCapture(0)
-faceClassif = cv2.CascadeClassifier(".//data//haarcascade//haarcascade_frontalface_default.xml")
+faceClassif = cv2.CascadeClassifier(".haarcascade//haarcascade_frontalface_default.xml")
 count = 0
 
 while True:
@@ -24,7 +24,7 @@ while True:
 
     faces = faceClassif.detectMultiScale(gray,1.3,5)
     for (x,y,w,h) in faces:
-        cv2.rectangle(faces, (x,y),(x+w,y+h),color="green", 2)
+        cv2.rectangle(faces, (x,y),(x+w,y+h),(0,255,0), 2)
         rostro = auxFrame[y:y+h, x:x+w]
         rostro = cv2.resize(rostro, (150,150), interpolation=cv2.INTER_CUBIC)
         cv2.imwrite(personPath + '/rostro_{}.jpg'.format(count), rostro)
@@ -35,5 +35,5 @@ while True:
     if k == 27 or count >= 300:
         break
 
-    cap.release()
-    cv2.destroyWindow()
+cap.release()
+cv2.destroyWindow()
