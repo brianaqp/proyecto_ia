@@ -3,16 +3,17 @@ import os
 import imutils
 import copy
 
+
 personName = "Brian"
-dataPath = "/Users/brianqp/PycharmProjects/proyecto_ia/reconocimiento_facial/data"
-personPath = dataPath + "/" + personName
+# dataPath = "/Users/brianqp/PycharmProjects/proyecto_ia/reconocimiento_facial/data/personas" # Mac
+dataPath = "C:/Users/brian/PycharmProjects/proyecto_ia/reconocimiento_facial/data/personas" # Windows
+personPath = dataPath + '/' + personName
 
-if not os.path.exists(personPath):
-    print("Carpeta creada ", personPath)
-    os.makedirs(personName)
 
-cap = cv2.VideoCapture(0)
-faceClassif = cv2.CascadeClassifier(".haarcascade//haarcascade_frontalface_default.xml")
+# cap = cv2.VideoCapture(0, cv2.CAP_DSHOW) # Esto es para usar la camara
+cap = cv2.VideoCapture('./data/Brian.mp4')
+
+faceClassif = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
 count = 0
 
 while True:
@@ -21,19 +22,18 @@ while True:
     frame = imutils.resize(frame, width=640)
     gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
     auxFrame = frame.copy()
-
-    faces = faceClassif.detectMultiScale(gray,1.3,5)
-    for (x,y,w,h) in faces:
-        cv2.rectangle(faces, (x,y),(x+w,y+h),(0,255,0), 2)
-        rostro = auxFrame[y:y+h, x:x+w]
-        rostro = cv2.resize(rostro, (150,150), interpolation=cv2.INTER_CUBIC)
-        cv2.imwrite(personPath + '/rostro_{}.jpg'.format(count), rostro)
-        count += 1
-
+    faces = faceClassif.detectMultiScale(gray, 1.3, 5)
+    for (x, y, w, h) in faces:
+        cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 2)
+        rostro = auxFrame[y:y + h, x:x + w]
+        rostro = cv2.resize(rostro, (150, 150), interpolation=cv2.INTER_CUBIC)
+        if not cv2.imwrite(personPath + '/rotro_{}.jpg'.format(count), rostro):
+            raise Exception("No se escribio nada pa")
+        count = count + 1
     cv2.imshow('frame', frame)
     k = cv2.waitKey(1)
     if k == 27 or count >= 300:
         break
 
 cap.release()
-cv2.destroyWindow()
+cv2.destroyAllWindows()
